@@ -28,26 +28,26 @@ import org.red5.server.api.scope.IScope;
 import org.slf4j.Logger;
 
 /**
- * Main application.
+ * Main application for https://github.com/Red5/red5-server/issues/31
  * 
  * @author Paul Gregoire (mondain@gmail.com)
  */
 public class Application extends MultiThreadedApplicationAdapter {
 
-	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "issues"); 
-		
-@Override
-public boolean appConnect(IConnection conn, Object[] params){
-    if(params.length>0 && params[0] instanceof String){
-                Red5.getConnectionLocal().setAttribute("Connection", params[0]);
-    }
-    return super.appConnect(conn,params);
-}
+	private static Logger log = Red5LoggerFactory.getLogger(Application.class, "issues");
 
-@Override
-public void disconnect(IConnection conn,  IScope scope){
-  log.info("Connection attribute: {}", Red5.getConnectionLocal().getAttribute("Connection"));   
-  log.info("Connection - {}:{}", Red5.getConnectionLocal().getRemoteAddress(), Red5.getConnectionLocal().getRemotePort());
-}
+	@Override
+	public boolean appConnect(IConnection conn, Object[] params) {
+		if (params.length > 0 && params[0] instanceof String) {
+			Red5.getConnectionLocal().setAttribute("Connection", params[0]);
+		}
+		return super.appConnect(conn, params);
+	}
+
+	@Override
+	public void disconnect(IConnection conn, IScope scope) {
+		log.info("Connection attribute: {}", Red5.getConnectionLocal().getAttribute("Connection"));
+		log.info("Connection - {}:{}", Red5.getConnectionLocal().getRemoteAddress(), Red5.getConnectionLocal().getRemotePort());
+	}
 
 }

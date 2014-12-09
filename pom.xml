@@ -2,9 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-    <groupId>org.red5</groupId>
-    <artifactId>issues</artifactId>
-    <version>1.0</version>
+	<groupId>org.red5</groupId>
+	<artifactId>issues</artifactId>
+	<version>1.0</version>
 	<packaging>war</packaging>
 	<name>issues</name>
 	<description>Red5 issues</description>
@@ -27,7 +27,7 @@
 			<id>Paul Gregoire</id>
 			<email>mondain@gmail.com</email>
 		</developer>
-	</developers>	
+	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<red5-server.version>1.0.4-SNAPSHOT</red5-server.version>
@@ -49,7 +49,7 @@
 		<repository>
 			<id>Xuggle</id>
 			<url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
-		</repository>		
+		</repository>
 		<repository>
 			<id>repo1.maven.org</id>
 			<url>http://repo1.maven.org/maven2</url>
@@ -143,7 +143,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>		
+			</plugin>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
@@ -169,7 +169,7 @@
 				<groupId>org.red5</groupId>
 				<artifactId>red5-server</artifactId>
 				<version>${red5-server.version}</version>
-<scope>compile</scope>
+				<scope>compile</scope>
 				<type>jar</type>
 			</dependency>
 			<dependency>
@@ -285,7 +285,7 @@
 				<scope>compile</scope>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>		
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.red5</groupId>

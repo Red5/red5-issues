@@ -24,6 +24,6 @@
 		<property name="virtualHosts" value="${webapp.virtualHosts}"/>
 	</bean>
 	
-	<bean id="web.handler" class="org.red5.issues.issue31.Application"/>
+	<bean id="web.handler" class="org.red5.issues.issue39.Application"/>
 			
 </beans>
