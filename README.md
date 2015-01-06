@@ -8,11 +8,17 @@ Code used to test or verify issues submitted to the Red5 project. Feel free to f
 ```
 
 How to proceed
+
 1. Create an issue report on red5-server
+
 2. Include your reproduction steps
+
 3. Pull this repo
+
 4. Create an application class to demonstrate the issue (use the existing code as an example)
+
 5. Create a pull request with your code
+
 6. Update your issue report
 
 We'll look into the issue as soon as possible and your example app will go a long way towards getting a fix in-place.
