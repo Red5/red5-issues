@@ -30,10 +30,10 @@
 	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<red5-server.version>1.0.4-SNAPSHOT</red5-server.version>
-		<red5-io.version>1.0.4-SNAPSHOT</red5-io.version>
-		<red5-service.version>1.0.3-RELEASE</red5-service.version>
-		<spring.version>4.0.7.RELEASE</spring.version>
+		<red5-server.version>1.0.5-SNAPSHOT</red5-server.version>
+		<red5-io.version>1.0.5-SNAPSHOT</red5-io.version>
+		<red5-service.version>1.0.5-SNAPSHOT</red5-service.version>
+		<spring.version>4.0.8.RELEASE</spring.version>
 		<mina.version>2.0.8</mina.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<logback.version>1.1.2</logback.version>

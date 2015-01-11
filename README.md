@@ -7,4 +7,8 @@ Code used to test or verify issues submitted to the Red5 project. Feel free to f
     <bean id="web.handler" class="org.red5.issues.issue39.Application"/>
 ```
 
+Following the format above will keep things from getting confusing.
 
+```
+[package].[issue short name].Application
+```
