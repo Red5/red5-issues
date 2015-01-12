@@ -1,12 +1,18 @@
 package org.red5.issues.issue46;
 
+import java.util.List;
+import java.util.Map;
+
 import org.red5.logging.Red5LoggerFactory;
 import org.red5.server.adapter.MultiThreadedApplicationAdapter;
+import org.red5.server.api.IAttributeStore;
 import org.red5.server.api.IClient;
 import org.red5.server.api.IConnection;
 import org.red5.server.api.Red5;
 import org.red5.server.api.scope.IScope;
 import org.red5.server.api.so.ISharedObject;
+import org.red5.server.api.so.ISharedObjectBase;
+import org.red5.server.api.so.ISharedObjectListener;
 
 /**
  * Thanks to Remus Negrota for creating the application source for testing this issue.
@@ -31,23 +37,24 @@ public class Application extends MultiThreadedApplicationAdapter {
 	public boolean roomJoin(IClient client, IScope room) {
 		log.info("roomJoin(" + client.toString() + "," + room.toString() + ")");
 
-		ExampleObject obj = new ExampleObject();
-		obj.random1 = 0;
-		obj.random2 = 0;
-		obj.siteId = "Example String";
-		obj.clientId.add("someID");
-
-		/*Map<String, Object> obj = new HashMap<String, Object>();
-		
-		obj.put("random1", 0);
-		obj.put("random2", 0);
-		obj.put("siteId", "Example String");
-		obj.put("clientId", "someID");*/
-
 		IScope currentScope = Red5.getConnectionLocal().getScope();
 		ISharedObject so = getSharedObject(currentScope, "example_so", false);
-		so.setAttribute("object1", obj);
 
+		ExampleObject obj = null;
+		if (so.hasAttribute("object1")) {
+			// if the object exists in the so already, update it with the new client
+			obj = (ExampleObject) so.getAttribute("object1");
+			obj.clientId.add(client.getId());
+		} else {
+			// create a new object
+    		obj = new ExampleObject();
+    		obj.siteId = "Example String";
+    		obj.clientId.add(client.getId());
+    		// set a listener the first time we create the obj
+    		so.addSharedObjectListener(new SOListener());
+		}
+		so.setAttribute("object1", obj);
+		
 		return true;
 	}
 
@@ -107,21 +114,64 @@ public class Application extends MultiThreadedApplicationAdapter {
 	public void updateSo(int randomNr1, int randomNr2) {
 		log.info("updateSo(" + randomNr1 + " " + randomNr2 + ")");
 
-		IScope currentScope = Red5.getConnectionLocal().getScope();
+		IConnection conn = Red5.getConnectionLocal();
+		
+		IScope currentScope = conn.getScope();
 		ISharedObject so = getSharedObject(currentScope, "example_so", false);
 
+//		so.beginUpdate(conn);
+		
 		ExampleObject obj = (ExampleObject) so.getAttribute("object1");
-
-		log.info("updateSo VALUES(" + obj.random1 + " " + obj.random2 + ")");
+		log.info("updateSo old VALUES(" + obj.random1 + " " + obj.random2 + ")");
 
 		obj.random1 = randomNr1;
 		obj.random2 = randomNr2;
+		
+		// set dirty flag if modifying the attribute object directly
+		so.setDirty(true);
 
-		/*Map <String, Object> obj = (HashMap<String, Object>) so.getAttribute("object1");
-		obj.put("random1", randomNr1);
-		obj.put("random2", randomNr2);*/
+		log.info("updateSo new VALUES(" + obj.random1 + " " + obj.random2 + ")");
 
 		so.setAttribute("object1", obj);
+		
+//		so.endUpdate();		
+		
+	}
+	
+	private final class SOListener implements ISharedObjectListener {
+		
+		public void onSharedObjectClear(ISharedObjectBase so) {		
+			log.debug("onSharedObjectClear: {}", so);
+		}
+
+		public void onSharedObjectConnect(ISharedObjectBase so) {		
+			log.debug("onSharedObjectConnect: {}", so);
+		}
+
+		public void onSharedObjectDelete(ISharedObjectBase so, String key) {		
+			log.debug("onSharedObjectDelete key: {}", key);
+		}
+
+		public void onSharedObjectDisconnect(ISharedObjectBase so) {		
+			log.debug("onSharedObjectDisconnect: {}", so);
+		}
+
+		public void onSharedObjectSend(ISharedObjectBase so, String method, List<?> attributes) {
+			log.debug("onSharedObjectSend - method: {} {}", method, attributes);
+		}
+
+		public void onSharedObjectUpdate(ISharedObjectBase so, IAttributeStore attributes) {	
+			log.debug("onSharedObjectUpdate - {}", attributes);	
+		}
+
+		public void onSharedObjectUpdate(ISharedObjectBase so, Map<String, Object> attributes) {
+			log.debug("onSharedObjectUpdate - {}", attributes);
+		}
+
+		public void onSharedObjectUpdate(ISharedObjectBase so, String key, Object value) {
+			log.debug("onSharedObjectUpdate - {} = {}", key, value);
+		}
+		
 	}
 	
 }
