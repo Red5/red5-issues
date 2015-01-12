@@ -1,4 +1,4 @@
-package
+package issue46
 {
 /*
     Thanks to remus@nusofthq.com for creating the application source for testing this issue.
