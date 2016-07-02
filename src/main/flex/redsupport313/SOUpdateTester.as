@@ -6,48 +6,28 @@ package redsupport313
 	import flash.events.MouseEvent;
 	import flash.events.NetStatusEvent;
 	import flash.events.SyncEvent;
+	import flash.external.ExternalInterface;
 	import flash.net.NetConnection;
 	import flash.net.ObjectEncoding;
 	import flash.net.SharedObject;
-	import flash.text.TextField;
-	import flash.text.TextFormat;
-    import flash.external.ExternalInterface;
+	import flash.text.*;
 	
-	public class red5SyncExample extends Sprite {
+	public class SOUpdateTester extends Sprite {
 
 		private var nc:NetConnection;
 		private var sharedObj:SharedObject;
 		private var randomNr1:Number;
 		private var randomNr2:Number;
+
+		private var host:String = "192.168.86.102";
 		
-		public function red5SyncExample() {
-
+		public function SOUpdateTester() {
+			ExternalInterface.marshallExceptions = true;
             buildUI();
-            saveBtn.addEventListener(MouseEvent.CLICK, saveValue);
-            clearBtn.addEventListener(MouseEvent.CLICK, clearValue);
-
+            updateBtn.addEventListener(MouseEvent.CLICK, updateData);
+			sendBtn.addEventListener(MouseEvent.CLICK, getMap);
+            //sendBtn.addEventListener(MouseEvent.CLICK, sendParticipants);
 			randomize();
-			
-			data = new TextField();
-			data.width = 300;
-			data.text = randomNr1 + " " + randomNr2;
-			data.setTextFormat(new TextFormat("Arial", 15));
-			this.addChild(data);
-			
-			updateBtn = new Sprite();
-			updateBtn.graphics.beginFill(0x333333, 1);
-			updateBtn.graphics.drawRect(0, 20, 100, 20);
-			updateBtn.graphics.endFill();
-			this.addChild(updateBtn);
-			updateBtn.buttonMode = true;
-			updateBtn.addEventListener(MouseEvent.CLICK, updateData);
-			
-			var updateText:TextField = new TextField();
-			updateText.text = "Update";
-			updateText.y = 18;
-			updateText.setTextFormat(new TextFormat("Arial", 15, 0xFFFFFF));
-			updateBtn.addChild(updateText);
-			updateBtn.mouseChildren = false;
 			
 			connectToServer();
 		}
@@ -60,7 +40,7 @@ package redsupport313
 			nc.addEventListener(NetStatusEvent.NET_STATUS,onNetConnectionStatus);
 			nc.addEventListener(AsyncErrorEvent.ASYNC_ERROR,onAsyncError);
 			
-			nc.connect("rtmp://localhost/issues/_definst_", "dummy");
+			nc.connect("rtmp://" + host + "/issues/_definst_", "dummy");
 		}
 		
 		private function onNetConnectionStatus(e:NetStatusEvent):void {
@@ -87,8 +67,7 @@ package redsupport313
 		}
 		
 		private function onSync(event:SyncEvent):void {
-			log("onSyncSo()" + sharedObj.data);		
-			data.text = sharedObj.data["object1"]["random1"] + " " + sharedObj.data["object1"]["random2"];
+			log("onSyncSo()" + sharedObj.data);
 
             for (var i:Object in event.changeList) {
                 var changeObj:Object = event.changeList[i];                       
@@ -99,6 +78,13 @@ package redsupport313
                     log(sharedObj.data[changeObj.name]);
                 }
             }
+			if (sharedObj.data["object1"]) {
+				log(sharedObj.data["object1"].random1 + " " + sharedObj.data["object1"].random2);				
+			}
+			if (sharedObj.data["attributeMap"]) {
+				log(sharedObj.data["attributeMap"]);				
+			}
+
 		}
 		
 		private function updateData(e:MouseEvent):void {
@@ -107,12 +93,22 @@ package redsupport313
 			nc.call("updateSo", null, randomNr1, randomNr2);
 		}
 		
+		private function getMap(e:MouseEvent):void {
+			log("getMap()");            
+			var map:Object = {
+				key1: "aaaaa",
+				key2: "bbbbb"
+			};
+			nc.call("getMap", null, map);
+		}
+		
 		private function randomize():void {
 			randomNr1 = Math.ceil(Math.random() * 9999);
 			randomNr2 = Math.ceil(Math.random() * 9999);
+			input.text = randomNr1 + " " + randomNr2;
 		}
 
-        private function sendParticipants():void {
+        private function sendParticipants(e:MouseEvent):void {
             var value:Object = {
                 participants: {
                     one: {
@@ -128,7 +124,17 @@ package redsupport313
         }
 
         public function log(entry:String):void {
-            ExternalInterface.call("console.log", entry);
+			output.appendText(entry + "\n");
+			if (ExternalInterface.available) {
+				try {
+            	    ExternalInterface.call("console.log", entry);
+				
+				} catch(e:Error) {
+					//output.appendText(e.message + "\n");
+				}
+			}
+			//set vertical scroll position to max value
+			output.scrollV = output.maxScrollV;
         }
 
         // UI elements
@@ -139,8 +145,7 @@ package redsupport313
         private var inputLbl:TextField;
         private var input:TextField;
         private var output:TextField;
-        private var saveBtn:Sprite;
-        private var clearBtn:Sprite;
+        private var sendBtn:Sprite;
     
         private function buildUI():void {
             // input label
@@ -153,7 +158,7 @@ package redsupport313
             // input TextField
             input = new TextField();
             addChild(input);
-            input.x = 80;
+            input.x = 100;
             input.y = 10;
             input.width = 100;
             input.height = 20;
@@ -166,40 +171,42 @@ package redsupport313
             addChild(output);
             output.x = 10;
             output.y = 35;
-            output.width = 250;
+            output.width = 350;
             output.height = 250;
             output.multiline = true;
             output.wordWrap = true;
             output.border = true;
             output.background = true;
-            
+			
             // Save button
-            saveBtn = new Sprite();
-            addChild(saveBtn);
-            saveBtn.x = 190;
-            saveBtn.y = 10;
-            saveBtn.useHandCursor = true;
-            saveBtn.graphics.lineStyle(1);
-            saveBtn.graphics.beginFill(0xcccccc);
-            saveBtn.graphics.drawRoundRect(0, 0, 30, 20, 5, 5);
-            var saveLbl:TextField = new TextField();
-            saveBtn.addChild(saveLbl);
-            saveLbl.text = "Save";
-            saveLbl.selectable = false;
+			updateBtn = new Sprite();
+            addChild(updateBtn);
+			updateBtn.x = 10;
+			updateBtn.y = 290;
+			updateBtn.useHandCursor = true;
+			updateBtn.buttonMode = true;
+			updateBtn.graphics.lineStyle(1);
+			updateBtn.graphics.beginFill(0xcccccc);
+			updateBtn.graphics.drawRoundRect(0, 0, 45, 20, 5, 5);
+            var updateLbl:TextField = new TextField();
+			updateBtn.addChild(updateLbl);
+			updateLbl.text = "Update";
+			updateLbl.selectable = false;
             
             // Clear button
-            clearBtn = new Sprite();
-            addChild(clearBtn);
-            clearBtn.x = 230;
-            clearBtn.y = 10;
-            clearBtn.useHandCursor = true;
-            clearBtn.graphics.lineStyle(1);
-            clearBtn.graphics.beginFill(0xcccccc);
-            clearBtn.graphics.drawRoundRect(0, 0, 30, 20, 5, 5);
-            var clearLbl:TextField = new TextField();
-            clearBtn.addChild(clearLbl);
-            clearLbl.text = "Clear";
-            clearLbl.selectable = false;
+			sendBtn = new Sprite();
+            addChild(sendBtn);
+			sendBtn.x = 60;
+			sendBtn.y = 290;
+			sendBtn.useHandCursor = true;
+			sendBtn.buttonMode = true;
+			sendBtn.graphics.lineStyle(1);
+			sendBtn.graphics.beginFill(0xcccccc);
+			sendBtn.graphics.drawRoundRect(0, 0, 60, 20, 5, 5);
+            var sendLbl:TextField = new TextField();
+			sendBtn.addChild(sendLbl);
+			sendLbl.text = "Send Map";
+			sendLbl.selectable = false;
         }
 
 	}
