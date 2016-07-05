@@ -67,8 +67,25 @@ package redsupport313
 		}
 		
 		private function onSync(event:SyncEvent):void {
-			log("onSyncSo()" + sharedObj.data);
+			//log("onSyncSo() " + sharedObj.data);
+			log("onSyncSo() " + event.changeList.length); 
 
+            for (var cl:int = 0; cl < event.changeList.length; cl++) {
+                var changeObj:Object = event.changeList[cl]; 
+                switch (changeObj.code) {
+                    case "clear":
+                        log("Clear: " + changeObj.name);
+                        break;
+                    case "success":
+                        log("Success: " + changeObj.name);
+                        break;
+                    case "change":
+                        log("Change: " + changeObj.name);
+                        break;
+                }
+                log("Value: " + sharedObj.data[changeObj.name]); 
+            }
+            /*
             for (var i:Object in event.changeList) {
                 var changeObj:Object = event.changeList[i];                       
                 if (changeObj.code === 'success') { 
@@ -78,6 +95,7 @@ package redsupport313
                     log(sharedObj.data[changeObj.name]);
                 }
             }
+            */
 			if (sharedObj.data["object1"]) {
 				log(sharedObj.data["object1"].random1 + " " + sharedObj.data["object1"].random2);				
 			}
