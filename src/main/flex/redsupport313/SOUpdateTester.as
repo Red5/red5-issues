@@ -74,16 +74,25 @@ package redsupport313
                 var changeObj:Object = event.changeList[cl]; 
                 switch (changeObj.code) {
                     case "clear":
-                        log("Clear: " + changeObj.name);
+                        log("Clear: " + (changeObj.name !== undefined ? changeObj.name : ""));
                         break;
                     case "success":
                         log("Success: " + changeObj.name);
+						log("Value: " + sharedObj.data[changeObj.name]); 
                         break;
                     case "change":
                         log("Change: " + changeObj.name);
+						log("Value: " + sharedObj.data[changeObj.name]); 
+						if (changeObj.name === "object1" && sharedObj.data[changeObj.name]) {							
+							log(sharedObj.data["object1"].random1 + " " + sharedObj.data["object1"].random2);				
+						}
+						if (changeObj.name === "attributeMap" && sharedObj.data[changeObj.name]) {
+							//log(sharedObj.data["attributeMap"]);
+							log("Key1: " + sharedObj.data["attributeMap"].key1);				
+							log("Key2: " + sharedObj.data["attributeMap"].key2);
+						}
                         break;
                 }
-                log("Value: " + sharedObj.data[changeObj.name]); 
             }
             /*
             for (var i:Object in event.changeList) {
@@ -96,12 +105,6 @@ package redsupport313
                 }
             }
             */
-			if (sharedObj.data["object1"]) {
-				log(sharedObj.data["object1"].random1 + " " + sharedObj.data["object1"].random2);				
-			}
-			if (sharedObj.data["attributeMap"]) {
-				log(sharedObj.data["attributeMap"]);				
-			}
 
 		}
 		
