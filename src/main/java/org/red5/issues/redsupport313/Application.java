@@ -1,5 +1,6 @@
 package org.red5.issues.redsupport313;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,13 @@ public class Application extends MultiThreadedApplicationAdapter {
     private final String soName = "soName";
 
     @Override
+    public boolean connect(IConnection conn, IScope scope, Object[] params) {
+        log.info("Application connect parameters: {}", Arrays.toString(params));
+        log.info("Connection parameters: {} attributes: {}", conn.getConnectParams(), conn.getAttributes());
+        return super.connect(conn, scope, params);
+    }
+
+    @Override
     public boolean roomStart(IScope currentScope) {
         log.info("roomStart: {}", currentScope.toString());
         return true;
@@ -31,6 +39,10 @@ public class Application extends MultiThreadedApplicationAdapter {
 
     @Override
     public boolean roomConnect(IConnection conn, Object[] params) {
+        log.info("Room connect parameters: {}", Arrays.toString(params));
+        IClient client = conn.getClient();
+        log.info("{}", client);
+        log.info("Client attributes: {}", client.getAttributes());
         // get the client
         return true;
     }
